@@ -11,23 +11,25 @@ from services.watson_dialog import get_response
 from services.cloudant_service import save_expense, expense_db
 
 
-# Serve frontend from static folder
-app = Flask(__name__, static_folder="static")
+# Flask app
+app = Flask(__name__, static_folder="static", static_url_path="")
 CORS(app)
 
 
 # ---------------- SERVE WEBSITE ----------------
+
 @app.route("/")
 def serve_home():
-    return send_from_directory("static", "index.html")
+    return send_from_directory(app.static_folder, "index.html")
 
 
 @app.route("/dashboard")
 def serve_dashboard():
-    return send_from_directory("static", "dashboard.html")
+    return send_from_directory(app.static_folder, "dashboard.html")
 
 
 # ---------------- CHAT ROUTE ----------------
+
 @app.route('/chat', methods=['POST'])
 def chat():
 
@@ -48,8 +50,8 @@ def chat():
     print("User Sentiment:", sentiment)
     print("Keywords:", keywords)
 
-
     # ---------------- EMOTIONAL AI SUPPORT ----------------
+
     if sentiment == "negative":
 
         if "stress" in text or "exam" in text:
@@ -66,8 +68,8 @@ def chat():
             "reply": "It seems like you're having a tough moment. I can help you plan your day, track expenses, or organize tasks."
         })
 
-
     # ---------------- EXPENSE DETECTION ----------------
+
     if "expense" in text:
 
         try:
@@ -87,8 +89,8 @@ def chat():
                 "reply": "Please type like: add expense 500 food"
             })
 
-
     # ---------------- STUDY PLANNER ----------------
+
     if "study plan" in text:
 
         days = re.findall(r'\d+', text)
@@ -105,14 +107,15 @@ def chat():
 
         return jsonify({"reply": plan})
 
-
     # ---------------- WATSON CHATBOT ----------------
+
     reply = get_response(user_message)
 
     return jsonify({"reply": reply})
 
 
 # ---------------- GET EXPENSES ----------------
+
 @app.route('/expenses')
 def get_expenses():
 
@@ -128,6 +131,7 @@ def get_expenses():
 
 
 # ---------------- SMART INSIGHTS ----------------
+
 @app.route('/insights')
 def insights():
 
@@ -160,6 +164,7 @@ def insights():
 
 
 # ---------------- EXPENSE PREDICTION ----------------
+
 @app.route("/prediction")
 def prediction():
 
@@ -184,6 +189,7 @@ def prediction():
 
 
 # ---------------- RUN SERVER ----------------
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
