@@ -12,7 +12,7 @@ from services.cloudant_service import save_expense, expense_db
 
 
 # Flask app
-app = Flask(__name__, static_folder="static", static_url_path="")
+app = Flask(__name__, static_folder="static")
 CORS(app)
 
 
