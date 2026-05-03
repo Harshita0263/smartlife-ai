@@ -11,8 +11,8 @@
 <style>
 
 body{
-font-family: 'Poppins', sans-serif;
-background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 padding:40px;
 color:white;
 }
@@ -24,13 +24,13 @@ margin-bottom:40px;
 
 .dashboard{
 display:grid;
-grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
 gap:25px;
 }
 
 .card{
-background: rgba(255,255,255,0.05);
-backdrop-filter: blur(10px);
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
 padding:25px;
 border-radius:15px;
 box-shadow:0 10px 30px rgba(0,0,0,0.4);
@@ -38,7 +38,7 @@ transition:0.3s;
 }
 
 .card:hover{
-transform: translateY(-5px);
+transform:translateY(-5px);
 box-shadow:0 15px 40px rgba(0,0,0,0.6);
 }
 
@@ -97,7 +97,6 @@ padding:10px;
 <p id="insightText">Loading insights...</p>
 </div>
 
-<!-- NEW AI FEATURE -->
 <div class="card">
 <h2>AI Expense Prediction</h2>
 <p id="predictionText">Predicting future spending...</p>
@@ -111,7 +110,7 @@ let chart
 
 async function loadExpenses(){
 
-const res = await fetch("http://127.0.0.1:5000/expenses")
+const res = await fetch("/expenses")
 const data = await res.json()
 
 let total = 0
@@ -169,7 +168,7 @@ async function loadInsights(){
 
 try{
 
-const res = await fetch("http://127.0.0.1:5000/insights")
+const res = await fetch("/insights")
 const data = await res.json()
 
 document.getElementById("insightText").innerText = data.insight
@@ -186,7 +185,7 @@ async function loadPrediction(){
 
 try{
 
-const res = await fetch("http://127.0.0.1:5000/prediction")
+const res = await fetch("/prediction")
 const data = await res.json()
 
 document.getElementById("predictionText").innerText = data.prediction
