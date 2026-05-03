@@ -28,9 +28,15 @@ def serve_dashboard():
     return send_from_directory(app.static_folder, "dashboard.html")
 
 
+# Serve static files 
+@app.route("/<path:path>")
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
+
+
 # ---------------- CHAT ROUTE ----------------
 
-@app.route('/chat', methods=['POST'])
+@app.route("/chat", methods=["POST"])
 def chat():
 
     data = request.get_json()
@@ -42,6 +48,7 @@ def chat():
     text = user_message.lower()
 
     # ---------------- NLU ANALYSIS ----------------
+
     analysis = analyze_text(user_message)
 
     sentiment = analysis.get("sentiment")
@@ -68,6 +75,7 @@ def chat():
             "reply": "It seems like you're having a tough moment. I can help you plan your day, track expenses, or organize tasks."
         })
 
+
     # ---------------- EXPENSE DETECTION ----------------
 
     if "expense" in text:
@@ -89,11 +97,12 @@ def chat():
                 "reply": "Please type like: add expense 500 food"
             })
 
+
     # ---------------- STUDY PLANNER ----------------
 
     if "study plan" in text:
 
-        days = re.findall(r'\d+', text)
+        days = re.findall(r"\d+", text)
 
         if days:
             d = int(days[0])
@@ -107,6 +116,7 @@ def chat():
 
         return jsonify({"reply": plan})
 
+
     # ---------------- WATSON CHATBOT ----------------
 
     reply = get_response(user_message)
@@ -116,7 +126,7 @@ def chat():
 
 # ---------------- GET EXPENSES ----------------
 
-@app.route('/expenses')
+@app.route("/expenses")
 def get_expenses():
 
     docs = []
@@ -132,7 +142,7 @@ def get_expenses():
 
 # ---------------- SMART INSIGHTS ----------------
 
-@app.route('/insights')
+@app.route("/insights")
 def insights():
 
     docs = []
@@ -191,5 +201,9 @@ def prediction():
 # ---------------- RUN SERVER ----------------
 
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 5000))
+
+    print("🚀 SmartLife AI Server Started")
+
     app.run(host="0.0.0.0", port=port)
