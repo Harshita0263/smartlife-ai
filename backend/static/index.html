@@ -13,80 +13,142 @@
 body{
 margin:0;
 font-family:Arial;
-background:#f5f7fb;
+background:#f1f5f9;
+color:#1e293b;
 }
+
+/* APP LAYOUT */
 
 .app{
 display:flex;
 height:100vh;
 }
 
+/* SIDEBAR */
+
 .sidebar{
-width:220px;
-background:#1e293b;
+width:230px;
+background:#0f172a;
 color:white;
 padding:20px;
 }
 
 .sidebar h2{
 margin-bottom:5px;
+color:#38bdf8;
+}
+
+.sidebar p{
+color:#cbd5f5;
 }
 
 .menu button{
 width:100%;
-padding:10px;
-margin-top:10px;
+padding:12px;
+margin-top:12px;
 border:none;
-background:#334155;
+background:#1e293b;
 color:white;
 cursor:pointer;
-border-radius:6px;
+border-radius:8px;
+font-size:15px;
+transition:0.3s;
 }
 
 .menu button:hover{
-background:#475569;
+background:#334155;
 }
+
+/* MAIN AREA */
 
 .main{
 flex:1;
-padding:20px;
+padding:30px;
 overflow-y:auto;
+background:white;
 }
 
+/* HEADER */
+
 .header{
-margin-bottom:20px;
+margin-bottom:25px;
 }
+
+.header h1{
+color:#0f172a;
+font-size:32px;
+margin-bottom:10px;
+}
+
+.header p{
+color:#475569;
+}
+
+/* DASHBOARD BUTTON */
 
 .dashboard-btn{
 background:#2563eb;
 border:none;
 color:white;
+padding:10px 18px;
 border-radius:6px;
+font-size:14px;
+cursor:pointer;
+margin-bottom:10px;
 }
+
+.dashboard-btn:hover{
+background:#1d4ed8;
+}
+
+/* CHAT BOX */
 
 #chat-box{
-height:300px;
+height:320px;
 overflow-y:auto;
 border:1px solid #ddd;
-padding:10px;
-border-radius:10px;
+padding:15px;
+border-radius:12px;
 margin-bottom:15px;
-background:white;
+background:#f8fafc;
 }
 
+/* MESSAGES */
+
 .message{
-margin:8px 0;
+margin:10px 0;
+clear:both;
+font-size:14px;
 }
+
+/* USER MESSAGE */
 
 .user{
 text-align:right;
-color:#2563eb;
 }
 
-.ai{
-text-align:left;
-color:#111;
+.user{
+background:#38bdf8;
+color:white;
+padding:10px 15px;
+border-radius:12px;
+display:inline-block;
+max-width:70%;
+float:right;
 }
+
+/* AI MESSAGE */
+
+.ai{
+background:#1e293b;
+color:white;
+padding:10px 15px;
+border-radius:12px;
+display:inline-block;
+max-width:70%;
+}
+
+/* INPUT AREA */
 
 .input-area{
 display:flex;
@@ -95,9 +157,10 @@ gap:10px;
 
 input{
 flex:1;
-padding:10px;
+padding:12px;
 border-radius:8px;
 border:1px solid #ccc;
+font-size:14px;
 }
 
 button{
@@ -105,12 +168,25 @@ padding:10px 15px;
 cursor:pointer;
 border-radius:6px;
 border:none;
+background:#2563eb;
+color:white;
 }
+
+button:hover{
+background:#1d4ed8;
+}
+
+/* SECTIONS */
 
 .section{
 margin-top:60px;
 padding-top:20px;
-border-top:1px solid #ddd;
+border-top:1px solid #e2e8f0;
+}
+
+.section h2{
+color:#0f172a;
+margin-bottom:10px;
 }
 
 </style>
@@ -136,7 +212,6 @@ border-top:1px solid #ddd;
 
 </div>
 
-
 <!-- MAIN AREA -->
 <div class="main">
 
@@ -150,19 +225,20 @@ border-top:1px solid #ddd;
 <p>Ask anything about your life management</p>
 </div>
 
-
 <!-- CHAT SECTION -->
+
 <div id="chat-section" class="section">
 
 <h2>💬 Chat with SmartLife AI</h2>
 
 <div id="chat-box">
 <div class="message ai">
-AI: Hello 👋 I am SmartLife AI. How can I help you today?
+Hello 👋 I am SmartLife AI. How can I help you today?
 </div>
 </div>
 
 <div class="input-area">
+
 <input 
 type="text" 
 id="user-input" 
@@ -171,12 +247,13 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 >
 
 <button onclick="sendMessage()">➤</button>
-</div>
 
 </div>
 
+</div>
 
 <!-- EXPENSE SECTION -->
+
 <div id="expense-section" class="section">
 
 <h2>💰 Expense Tracking</h2>
@@ -189,8 +266,8 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 
 </div>
 
-
 <!-- TASK SECTION -->
+
 <div id="task-section" class="section">
 
 <h2>📅 Task Planner</h2>
@@ -203,8 +280,8 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 
 </div>
 
-
 <!-- INSIGHT SECTION -->
+
 <div id="insight-section" class="section">
 
 <h2>📊 AI Insights</h2>
