@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import re
+import os
 
 # Watson services
 from services.watson_nlu import analyze_text
@@ -10,16 +11,20 @@ from services.watson_dialog import get_response
 from services.cloudant_service import save_expense, expense_db
 
 
-app = Flask(__name__)
+# Serve frontend from static folder
+app = Flask(__name__, static_folder="static")
 CORS(app)
 
 
-# ---------------- HOME ROUTE ----------------
-@app.route('/')
-def home():
-    return jsonify({
-        "message": "SmartLife AI Backend is Running 🚀"
-    })
+# ---------------- SERVE WEBSITE ----------------
+@app.route("/")
+def serve_home():
+    return send_from_directory("static", "index.html")
+
+
+@app.route("/dashboard")
+def serve_dashboard():
+    return send_from_directory("static", "dashboard.html")
 
 
 # ---------------- CHAT ROUTE ----------------
@@ -180,4 +185,5 @@ def prediction():
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
