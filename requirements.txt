@@ -1,0 +1,6 @@
+flask
+flask-cors
+ibm-watson
+ibm-cloud-sdk-core
+cloudant
+gunicorn

@@ -1,0 +1,132 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #0b1220;
+    color: white;
+}
+
+/* MAIN LAYOUT */
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 250px;
+    background: #111a2e;
+    padding: 20px;
+    border-right: 1px solid #1f2a44;
+}
+
+.sidebar h2 {
+    color: #38bdf8;
+}
+
+.sidebar p {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.menu {
+    margin-top: 30px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: #1e293b;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background: #38bdf8;
+    color: black;
+}
+
+/* MAIN AREA */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.header p {
+    color: #94a3b8;
+}
+
+/* CHAT BOX */
+#chat-box{
+background:#0f172a;
+padding:20px;
+border-radius:12px;
+height:350px;
+overflow-y:auto;
+color:white;
+}
+
+.message{
+padding:12px 15px;
+margin:10px 0;
+border-radius:10px;
+max-width:75%;
+font-size:15px;
+}
+
+.message.ai{
+background:#1e293b;
+color:white;
+}
+
+.message.user{
+background:#38bdf8;
+color:white;
+margin-left:auto;
+text-align:right;
+}
+
+/* INPUT */
+.input-area {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+button {
+    padding: 12px 18px;
+    background: #38bdf8;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.dashboard-btn{
+background:#4CAF50;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+.dashboard-btn:hover{
+background:#45a049;
+}

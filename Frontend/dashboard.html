@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SmartLife AI Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+padding:40px;
+color:white;
+}
+
+h1{
+text-align:center;
+margin-bottom:40px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+gap:25px;
+}
+
+.card{
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(10px);
+padding:25px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+transition:0.3s;
+}
+
+.card:hover{
+transform: translateY(-5px);
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+}
+
+.card h2{
+margin-bottom:15px;
+font-weight:500;
+}
+
+#totalExpense{
+font-size:28px;
+font-weight:600;
+color:#00ffcc;
+}
+
+ul{
+padding-left:20px;
+}
+
+li{
+margin:5px 0;
+}
+
+canvas{
+background:white;
+border-radius:10px;
+padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🚀 SmartLife AI Dashboard</h1>
+
+<div class="dashboard">
+
+<div class="card">
+<h2>Total Expenses</h2>
+<p id="totalExpense">Loading...</p>
+</div>
+
+<div class="card">
+<h2>Expense List</h2>
+<ul id="expenseList"></ul>
+</div>
+
+<div class="card">
+<h2>Expense Analytics</h2>
+<canvas id="expenseChart"></canvas>
+</div>
+
+<div class="card">
+<h2>AI Smart Insights</h2>
+<p id="insightText">Loading insights...</p>
+</div>
+
+<!-- NEW AI FEATURE -->
+<div class="card">
+<h2>AI Expense Prediction</h2>
+<p id="predictionText">Predicting future spending...</p>
+</div>
+
+</div>
+
+<script>
+
+let chart
+
+async function loadExpenses(){
+
+const res = await fetch("http://127.0.0.1:5000/expenses")
+const data = await res.json()
+
+let total = 0
+let categories = {}
+
+const list = document.getElementById("expenseList")
+list.innerHTML = ""
+
+data.forEach(exp => {
+
+total += Number(exp.amount)
+
+const li = document.createElement("li")
+li.innerText = "₹ " + exp.amount + " - " + exp.category
+list.appendChild(li)
+
+if(categories[exp.category]){
+categories[exp.category] += Number(exp.amount)
+}else{
+categories[exp.category] = Number(exp.amount)
+}
+
+})
+
+document.getElementById("totalExpense").innerText = "₹ " + total
+
+createChart(categories)
+
+}
+
+function createChart(categories){
+
+const ctx = document.getElementById("expenseChart")
+
+const labels = Object.keys(categories)
+const values = Object.values(categories)
+
+if(chart){
+chart.destroy()
+}
+
+chart = new Chart(ctx,{
+type:'doughnut',
+data:{
+labels:labels,
+datasets:[{
+data:values
+}]
+}
+})
+
+}
+
+async function loadInsights(){
+
+try{
+
+const res = await fetch("http://127.0.0.1:5000/insights")
+const data = await res.json()
+
+document.getElementById("insightText").innerText = data.insight
+
+}catch(error){
+
+document.getElementById("insightText").innerText = "Unable to load insights."
+
+}
+
+}
+
+async function loadPrediction(){
+
+try{
+
+const res = await fetch("http://127.0.0.1:5000/prediction")
+const data = await res.json()
+
+document.getElementById("predictionText").innerText = data.prediction
+
+}catch(error){
+
+document.getElementById("predictionText").innerText = "Unable to predict expenses."
+
+}
+
+}
+
+loadExpenses()
+loadInsights()
+loadPrediction()
+
+</script>
+
+</body>
+</html>
