@@ -16,7 +16,7 @@ async function sendMessage() {
 
     try {
 
-        const response = await fetch("http://127.0.0.1:5000/chat", {
+        const response = await fetch("/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -49,7 +49,7 @@ async function loadInsights(){
 
     try {
 
-        const res = await fetch("http://127.0.0.1:5000/insights")
+        const res = await fetch("/insights")
 
         const data = await res.json()
 
@@ -84,7 +84,7 @@ async function loadChart(){
 
     try{
 
-        const res = await fetch("http://127.0.0.1:5000/expenses")
+        const res = await fetch("/expenses")
 
         const data = await res.json()
 
@@ -101,7 +101,6 @@ async function loadChart(){
         const labels = Object.keys(categoryTotals)
         const values = Object.values(categoryTotals)
 
-        // Destroy previous chart
         if(chartInstance){
             chartInstance.destroy()
         }
@@ -133,7 +132,7 @@ async function loadPrediction(){
 
     try{
 
-        const res = await fetch("http://127.0.0.1:5000/prediction")
+        const res = await fetch("/prediction")
 
         const data = await res.json()
 
@@ -168,6 +167,9 @@ window.onload = function(){
     loadPrediction()
 
 }
+
+
+// ---------------- SIDEBAR SCROLL ----------------
 function scrollToSection(sectionId){
 
     const section = document.getElementById(sectionId)
