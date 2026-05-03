@@ -1,14 +1,13 @@
 // ---------------- CHAT FUNCTION ----------------
 async function sendMessage() {
 
-    let inputBox = document.getElementById("user-input")
+    const inputBox = document.getElementById("user-input")
     if(!inputBox) return
 
-    let input = inputBox.value.trim()
+    const input = inputBox.value.trim()
+    if(!input) return
 
-    if (!input) return
-
-    let chatBox = document.getElementById("chat-box")
+    const chatBox = document.getElementById("chat-box")
 
     if(chatBox){
         chatBox.innerHTML += `<div class="message user">You: ${input}</div>`
@@ -47,27 +46,20 @@ async function sendMessage() {
 // ---------------- LOAD AI INSIGHTS ----------------
 async function loadInsights(){
 
+    const insightElement = document.getElementById("insightText")
+    if(!insightElement) return
+
     try {
 
         const res = await fetch("/insights")
-
         const data = await res.json()
 
-        const insightElement = document.getElementById("insightText")
-
-        if(insightElement){
-            insightElement.innerText = data.insight
-        }
+        insightElement.innerText = data.insight
 
     } catch (error) {
 
         console.log("Insight Error:", error)
-
-        const insightElement = document.getElementById("insightText")
-
-        if(insightElement){
-            insightElement.innerText = "Unable to load insights"
-        }
+        insightElement.innerText = "Unable to load insights"
     }
 
 }
@@ -79,23 +71,18 @@ let chartInstance = null
 async function loadChart(){
 
     const chartCanvas = document.getElementById("expenseChart")
-
     if(!chartCanvas) return
 
     try{
 
         const res = await fetch("/expenses")
-
         const data = await res.json()
 
         const categoryTotals = {}
 
         data.forEach(exp => {
-
             const cat = exp.category
-
             categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(exp.amount)
-
         })
 
         const labels = Object.keys(categoryTotals)
@@ -106,16 +93,13 @@ async function loadChart(){
         }
 
         chartInstance = new Chart(chartCanvas, {
-
             type: "pie",
-
             data: {
                 labels: labels,
                 datasets: [{
                     data: values
                 }]
             }
-
         })
 
     }catch(error){
@@ -130,27 +114,20 @@ async function loadChart(){
 // ---------------- LOAD AI EXPENSE PREDICTION ----------------
 async function loadPrediction(){
 
+    const predictionElement = document.getElementById("predictionText")
+    if(!predictionElement) return
+
     try{
 
         const res = await fetch("/prediction")
-
         const data = await res.json()
 
-        const predictionElement = document.getElementById("predictionText")
-
-        if(predictionElement){
-            predictionElement.innerText = data.prediction
-        }
+        predictionElement.innerText = data.prediction
 
     }catch(error){
 
         console.log("Prediction Error:", error)
-
-        const predictionElement = document.getElementById("predictionText")
-
-        if(predictionElement){
-            predictionElement.innerText = "Unable to generate prediction"
-        }
+        predictionElement.innerText = "Unable to generate prediction"
 
     }
 
@@ -161,9 +138,7 @@ async function loadPrediction(){
 window.onload = function(){
 
     loadInsights()
-
     loadChart()
-
     loadPrediction()
 
 }

@@ -6,13 +6,14 @@
 <title>SmartLife AI</title>
 
 <link rel="stylesheet" href="/static/style.css">
-<script src="/static/script.js"></script>
+<script src="/static/script.js" defer></script>
 
 <style>
 
 body{
 margin:0;
 font-family:Arial;
+background:#f5f7fb;
 }
 
 .app{
@@ -56,6 +57,13 @@ overflow-y:auto;
 margin-bottom:20px;
 }
 
+.dashboard-btn{
+background:#2563eb;
+border:none;
+color:white;
+border-radius:6px;
+}
+
 #chat-box{
 height:300px;
 overflow-y:auto;
@@ -63,7 +71,7 @@ border:1px solid #ddd;
 padding:10px;
 border-radius:10px;
 margin-bottom:15px;
-background:#fafafa;
+background:white;
 }
 
 .message{
@@ -95,6 +103,8 @@ border:1px solid #ccc;
 button{
 padding:10px 15px;
 cursor:pointer;
+border-radius:6px;
+border:none;
 }
 
 .section{
@@ -170,9 +180,11 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 <div id="expense-section" class="section">
 
 <h2>💰 Expense Tracking</h2>
-<p>Add expenses using the chat.</p>
+
+<p>Add expenses using chat.</p>
 
 <p>Example:</p>
+
 <p><b>add expense 500 food</b></p>
 
 </div>
@@ -182,9 +194,11 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 <div id="task-section" class="section">
 
 <h2>📅 Task Planner</h2>
+
 <p>You can ask AI to create study plans or daily schedules.</p>
 
 <p>Example:</p>
+
 <p><b>Create a study plan for exams</b></p>
 
 </div>
@@ -194,6 +208,7 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 <div id="insight-section" class="section">
 
 <h2>📊 AI Insights</h2>
+
 <p>Visit the dashboard to see expense analytics and AI insights.</p>
 
 <a href="/dashboard">
