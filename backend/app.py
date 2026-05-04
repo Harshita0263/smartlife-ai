@@ -40,7 +40,7 @@ def serve_static_files(path):
     return send_from_directory(app.static_folder, path)
 
 
-# ---------------- SIMPLE LOGIN ----------------
+# ---------------- LOGIN ----------------
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -63,7 +63,7 @@ def logout():
     return jsonify({"status": "logged out"})
 
 
-# ---------------- GET CURRENT USER ----------------
+# ---------------- CURRENT USER ----------------
 
 @app.route("/session-user")
 def session_user():
@@ -74,7 +74,7 @@ def session_user():
     return jsonify({"user": "Guest"})
 
 
-# ---------------- CHAT ROUTE ----------------
+# ---------------- CHAT ----------------
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -120,16 +120,21 @@ def chat():
         })
 
 
-    # ---------------- EXPENSE DETECTION ----------------
+    # ---------------- EXPENSE TRACKING ----------------
 
-    if "expense" in text:
+    if "expense" in text or "spent" in text:
 
         try:
 
-            words = user_message.split()
+            numbers = re.findall(r"\d+", text)
 
-            amount = float(words[2])
-            category = words[3]
+            if not numbers:
+                return jsonify({"reply": "Please include the amount."})
+
+            amount = float(numbers[0])
+
+            words = text.split()
+            category = words[-1]
 
             save_expense(session["user"], amount, category)
 
@@ -138,15 +143,14 @@ def chat():
             })
 
         except:
-
             return jsonify({
-                "reply": "Please type like: add expense 500 food"
+                "reply": "Example: add expense 500 food"
             })
 
 
     # ---------------- STUDY PLANNER ----------------
 
-    if "study plan" in text:
+    if "study" in text or "prepare" in text or "exam" in text:
 
         days = re.findall(r"\d+", text)
 
@@ -203,7 +207,7 @@ def get_expenses():
     return jsonify(docs)
 
 
-# ---------------- SMART INSIGHTS ----------------
+# ---------------- INSIGHTS ----------------
 
 @app.route("/insights")
 def insights():
@@ -243,7 +247,7 @@ def insights():
     return jsonify({"insight": insight})
 
 
-# ---------------- EXPENSE PREDICTION ----------------
+# ---------------- PREDICTION ----------------
 
 @app.route("/prediction")
 def prediction():
@@ -256,7 +260,6 @@ def prediction():
     for doc in expense_db:
 
         if doc.get("user") == session["user"]:
-
             docs.append(float(doc.get("amount", 0)))
 
     if len(docs) == 0:
