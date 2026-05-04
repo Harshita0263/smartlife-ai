@@ -1,87 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<title>Login - SmartLife AI</title>
+<meta charset="UTF-8">
+<title>SmartLife AI Login</title>
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
 body{
-font-family:Arial;
-background:#f5f7fb;
+height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+background:linear-gradient(135deg,#4f46e5,#2563eb,#1e293b);
+background-size:400% 400%;
+animation:bgMove 12s infinite alternate;
 }
 
-.box{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+100%{background-position:100% 50%;}
+}
+
+.login-card{
+
+width:360px;
+padding:40px;
+border-radius:16px;
+
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+
+box-shadow:0 15px 40px rgba(0,0,0,0.3);
+
 text-align:center;
+color:white;
+
+animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.logo{
+font-size:26px;
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.subtitle{
+font-size:14px;
+opacity:0.9;
+margin-bottom:25px;
 }
 
 input{
-padding:10px;
-width:200px;
-margin-top:10px;
-border-radius:6px;
-border:1px solid #ccc;
+
+width:100%;
+padding:12px;
+
+border:none;
+border-radius:8px;
+
+margin-bottom:15px;
+
+outline:none;
+
+font-size:14px;
 }
 
 button{
-margin-top:10px;
-padding:10px 20px;
-background:#2563eb;
-color:white;
+
+width:100%;
+padding:12px;
+
 border:none;
-border-radius:6px;
+border-radius:8px;
+
+background:white;
+color:#2563eb;
+
+font-size:16px;
+font-weight:bold;
+
 cursor:pointer;
+
+transition:0.3s;
+}
+
+button:hover{
+
+transform:scale(1.03);
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+
+}
+
+.footer{
+
+margin-top:20px;
+font-size:12px;
+opacity:0.8;
+
 }
 
 </style>
 
-</head>
-
-<body>
-
-<div class="box">
-
-<h2>SmartLife AI Login</h2>
-
-<input id="username" placeholder="Enter your name">
-
-<br>
-
-<button onclick="login()">Login</button>
-
-</div>
 
 <script>
 
 async function login(){
 
-let username = document.getElementById("username").value
+const username = document.getElementById("username").value.trim()
 
 if(!username){
-alert("Enter username")
+
+alert("Please enter your name")
 return
+
 }
 
-await fetch("/login",{
+const res = await fetch("/login",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
-body:JSON.stringify({username:username})
+
+body:JSON.stringify({
+username:username
 })
+
+})
+
+const data = await res.json()
+
+if(data.status === "success"){
 
 window.location.href="/"
 
 }
 
+}
+
 </script>
 
+</head>
+
+
+<body>
+
+<div class="login-card">
+
+<div class="logo">SmartLife AI</div>
+
+<div class="subtitle">
+Your Personal AI Life Assistant
+</div>
+
+<input
+type="text"
+id="username"
+placeholder="Enter your name"
+onkeypress="if(event.key==='Enter'){login()}"
+>
+
+<button onclick="login()">
+Login
+</button>
+
+<div class="footer">
+AI Powered Productivity & Expense Tracker
+</div>
+
+</div>
+
 </body>
+
 </html>
