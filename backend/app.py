@@ -46,7 +46,6 @@ def serve_static_files(path):
 def login():
 
     data = request.get_json()
-
     username = data.get("username")
 
     if not username:
@@ -61,8 +60,18 @@ def login():
 def logout():
 
     session.clear()
-
     return jsonify({"status": "logged out"})
+
+
+# ---------------- GET CURRENT USER ----------------
+
+@app.route("/session-user")
+def session_user():
+
+    if "user" in session:
+        return jsonify({"user": session["user"]})
+
+    return jsonify({"user": "Guest"})
 
 
 # ---------------- CHAT ROUTE ----------------
@@ -156,13 +165,13 @@ def chat():
             "Final revision"
         ]
 
-    plan = "Here is your study plan:\n\n"
+        plan = "Here is your study plan:\n\n"
 
-    for i in range(d):
-        task = tasks[i % len(tasks)]
-        plan += f"Day {i+1} – {task}\n"
+        for i in range(d):
+            task = tasks[i % len(tasks)]
+            plan += f"Day {i+1} – {task}\n"
 
-    return jsonify({"reply": plan})
+        return jsonify({"reply": plan})
 
 
     # ---------------- WATSON CHATBOT ----------------
@@ -225,7 +234,6 @@ def insights():
     for e in docs:
 
         cat = e["category"]
-
         category_totals[cat] = category_totals.get(cat, 0) + e["amount"]
 
     highest_category = max(category_totals, key=category_totals.get)

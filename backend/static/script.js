@@ -148,7 +148,7 @@ async function loadPrediction(){
 
 // ---------------- PAGE LOAD ----------------
 window.onload = function(){
-
+    loadUser()
     loadInsights()
     loadChart()
     loadPrediction()
@@ -166,5 +166,41 @@ function scrollToSection(sectionId){
             behavior:"smooth"
         })
     }
+
+}
+
+// ---------------- LOAD CURRENT USER ----------------
+async function loadUser(){
+
+    try{
+
+        const res = await fetch("/current-user")
+        const data = await res.json()
+
+        if(data.user){
+
+            const el = document.getElementById("welcomeUser")
+
+            if(el){
+                el.innerText = "Welcome, " + data.user
+            }
+
+        }
+
+    }catch(error){
+
+        console.log("User load error:", error)
+
+    }
+
+}
+
+
+// ---------------- LOGOUT ----------------
+async function logout(){
+
+    await fetch("/logout")
+
+    window.location.href = "/"
 
 }

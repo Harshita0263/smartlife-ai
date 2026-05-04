@@ -31,6 +31,9 @@ width:230px;
 background:#0f172a;
 color:white;
 padding:20px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
 }
 
 .sidebar h2{
@@ -40,6 +43,29 @@ color:#38bdf8;
 
 .sidebar p{
 color:#cbd5f5;
+}
+
+.user-box{
+margin-top:15px;
+font-size:14px;
+background:#1e293b;
+padding:10px;
+border-radius:8px;
+}
+
+.logout-btn{
+margin-top:10px;
+width:100%;
+padding:10px;
+border:none;
+background:#ef4444;
+color:white;
+cursor:pointer;
+border-radius:6px;
+}
+
+.logout-btn:hover{
+background:#dc2626;
 }
 
 .menu button{
@@ -200,8 +226,15 @@ margin-bottom:10px;
 <!-- SIDEBAR -->
 <div class="sidebar">
 
+<div>
+
 <h2>SmartLife AI</h2>
 <p>Personal AI Assistant</p>
+
+<div class="user-box">
+👤 Logged in as: <br>
+<b id="usernameDisplay">User</b>
+</div>
 
 <div class="menu">
 <button onclick="scrollToSection('chat-section')">💬 Chat</button>
@@ -209,6 +242,10 @@ margin-bottom:10px;
 <button onclick="scrollToSection('task-section')">📅 Tasks</button>
 <button onclick="scrollToSection('insight-section')">📊 Insights</button>
 </div>
+
+</div>
+
+<button class="logout-btn" onclick="logoutUser()">Logout</button>
 
 </div>
 
@@ -297,6 +334,41 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 </div>
 
 </div>
+
+<script>
+
+async function loadUsername(){
+
+try{
+
+const res = await fetch("/session-user")
+const data = await res.json()
+
+document.getElementById("usernameDisplay").innerText = data.user
+
+}catch(e){
+
+console.log("User load error")
+
+}
+
+}
+
+async function logoutUser(){
+
+await fetch("/logout")
+
+window.location.href="/"
+
+}
+
+window.onload = function(){
+
+loadUsername()
+
+}
+
+</script>
 
 </body>
 </html>
