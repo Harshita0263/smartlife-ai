@@ -10,9 +10,10 @@ expense_db = client["smartlife_expenses"]
 task_db = client["smartlife_tasks"]
 
 
-def save_expense(amount, category):
+def save_expense(user, amount, category):
 
     data = {
+        "user": user,
         "amount": amount,
         "category": category
     }

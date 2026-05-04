@@ -1,3 +1,12 @@
+// ---------------- GET USERNAME ----------------
+let username = localStorage.getItem("username")
+
+if(!username){
+    username = prompt("Enter your name")
+    localStorage.setItem("username", username)
+}
+
+
 // ---------------- CHAT FUNCTION ----------------
 async function sendMessage() {
 
@@ -10,7 +19,7 @@ async function sendMessage() {
     const chatBox = document.getElementById("chat-box")
 
     if(chatBox){
-        chatBox.innerHTML += `<div class="message user">You: ${input}</div>`
+        chatBox.innerHTML += `<div class="message user">${username}: ${input}</div>`
     }
 
     try {
@@ -20,7 +29,10 @@ async function sendMessage() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ message: input })
+            body: JSON.stringify({
+                message: input,
+                username: username
+            })
         })
 
         const data = await response.json()
@@ -51,7 +63,7 @@ async function loadInsights(){
 
     try {
 
-        const res = await fetch("/insights")
+        const res = await fetch("/insights?username=" + username)
         const data = await res.json()
 
         insightElement.innerText = data.insight
@@ -75,7 +87,7 @@ async function loadChart(){
 
     try{
 
-        const res = await fetch("/expenses")
+        const res = await fetch("/expenses?username=" + username)
         const data = await res.json()
 
         const categoryTotals = {}
@@ -119,7 +131,7 @@ async function loadPrediction(){
 
     try{
 
-        const res = await fetch("/prediction")
+        const res = await fetch("/prediction?username=" + username)
         const data = await res.json()
 
         predictionElement.innerText = data.prediction

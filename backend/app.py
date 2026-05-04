@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session
 from flask_cors import CORS
 import re
 import os
@@ -10,9 +10,8 @@ from services.watson_dialog import get_response
 # Cloudant database
 from services.cloudant_service import save_expense, expense_db
 
-
-# Flask app
 app = Flask(__name__, static_folder="static")
+app.secret_key = "smartlife_secret"
 CORS(app)
 
 
@@ -20,18 +19,50 @@ CORS(app)
 
 @app.route("/")
 def serve_home():
+
+    if "user" not in session:
+        return send_from_directory(app.static_folder, "login.html")
+
     return send_from_directory(app.static_folder, "index.html")
 
 
 @app.route("/dashboard")
 def serve_dashboard():
+
+    if "user" not in session:
+        return send_from_directory(app.static_folder, "login.html")
+
     return send_from_directory(app.static_folder, "dashboard.html")
 
 
-# Serve static files 
 @app.route("/<path:path>")
 def serve_static_files(path):
     return send_from_directory(app.static_folder, path)
+
+
+# ---------------- SIMPLE LOGIN ----------------
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.get_json()
+
+    username = data.get("username")
+
+    if not username:
+        return jsonify({"status": "error", "message": "Username required"})
+
+    session["user"] = username
+
+    return jsonify({"status": "success"})
+
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return jsonify({"status": "logged out"})
 
 
 # ---------------- CHAT ROUTE ----------------
@@ -39,8 +70,10 @@ def serve_static_files(path):
 @app.route("/chat", methods=["POST"])
 def chat():
 
-    data = request.get_json()
-    user_message = data.get("message")
+    if "user" not in session:
+        return jsonify({"reply": "Please login first."})
+
+    user_message = request.json.get("message")
 
     if not user_message:
         return jsonify({"reply": "Please type a message."})
@@ -54,25 +87,27 @@ def chat():
     sentiment = analysis.get("sentiment")
     keywords = analysis.get("keywords")
 
-    print("User Sentiment:", sentiment)
+    print("User:", session["user"])
+    print("Sentiment:", sentiment)
     print("Keywords:", keywords)
 
-    # ---------------- EMOTIONAL AI SUPPORT ----------------
+
+    # ---------------- EMOTIONAL SUPPORT ----------------
 
     if sentiment == "negative":
 
         if "stress" in text or "exam" in text:
             return jsonify({
-                "reply": "I understand exams can feel stressful 😔. Try studying in small sessions and take short breaks. I can also create a study plan for you."
+                "reply": "Exams can feel stressful. Try studying in small sessions with breaks."
             })
 
         if "sad" in text or "depressed" in text:
             return jsonify({
-                "reply": "I'm sorry you're feeling this way. Taking a short walk or talking to someone you trust can help. I'm here to help you manage tasks and stay organized 💙"
+                "reply": "I'm sorry you're feeling low. Talking to someone you trust can help."
             })
 
         return jsonify({
-            "reply": "It seems like you're having a tough moment. I can help you plan your day, track expenses, or organize tasks."
+            "reply": "It seems like you're having a tough moment. I can help organize tasks or expenses."
         })
 
 
@@ -81,18 +116,20 @@ def chat():
     if "expense" in text:
 
         try:
+
             words = user_message.split()
 
             amount = float(words[2])
             category = words[3]
 
-            save_expense(amount, category)
+            save_expense(session["user"], amount, category)
 
             return jsonify({
                 "reply": f"Expense of ₹{amount} for {category} saved successfully 💰"
             })
 
         except:
+
             return jsonify({
                 "reply": "Please type like: add expense 500 food"
             })
@@ -129,13 +166,19 @@ def chat():
 @app.route("/expenses")
 def get_expenses():
 
+    if "user" not in session:
+        return jsonify([])
+
     docs = []
 
     for doc in expense_db:
-        docs.append({
-            "amount": float(doc.get("amount", 0)),
-            "category": doc.get("category", "unknown")
-        })
+
+        if doc.get("user") == session["user"]:
+
+            docs.append({
+                "amount": float(doc.get("amount", 0)),
+                "category": doc.get("category", "unknown")
+            })
 
     return jsonify(docs)
 
@@ -145,17 +188,23 @@ def get_expenses():
 @app.route("/insights")
 def insights():
 
+    if "user" not in session:
+        return jsonify({"insight": "Please login first."})
+
     docs = []
 
     for doc in expense_db:
-        docs.append({
-            "amount": float(doc.get("amount", 0)),
-            "category": doc.get("category", "unknown")
-        })
+
+        if doc.get("user") == session["user"]:
+
+            docs.append({
+                "amount": float(doc.get("amount", 0)),
+                "category": doc.get("category", "unknown")
+            })
 
     if len(docs) == 0:
         return jsonify({
-            "insight": "No expenses added yet. Start tracking your spending!"
+            "insight": "No expenses added yet."
         })
 
     total = sum(e["amount"] for e in docs)
@@ -163,12 +212,14 @@ def insights():
     category_totals = {}
 
     for e in docs:
+
         cat = e["category"]
+
         category_totals[cat] = category_totals.get(cat, 0) + e["amount"]
 
     highest_category = max(category_totals, key=category_totals.get)
 
-    insight = f"You have spent most of your money on {highest_category}. Total spending so far is ₹{total}. Try managing this category to save more."
+    insight = f"You spent most on {highest_category}. Total spending is ₹{total}"
 
     return jsonify({"insight": insight})
 
@@ -178,15 +229,20 @@ def insights():
 @app.route("/prediction")
 def prediction():
 
+    if "user" not in session:
+        return jsonify({"prediction": "Please login first."})
+
     docs = []
 
     for doc in expense_db:
-        amount = float(doc.get("amount", 0))
-        docs.append(amount)
+
+        if doc.get("user") == session["user"]:
+
+            docs.append(float(doc.get("amount", 0)))
 
     if len(docs) == 0:
         return jsonify({
-            "prediction": "Not enough data to predict expenses yet."
+            "prediction": "Not enough data yet."
         })
 
     avg = sum(docs) / len(docs)
@@ -194,7 +250,7 @@ def prediction():
     predicted = avg * 1.2
 
     return jsonify({
-        "prediction": f"Based on your spending pattern, your next expenses may be around ₹{round(predicted,2)}"
+        "prediction": f"Your next spending may be around ₹{round(predicted,2)}"
     })
 
 
