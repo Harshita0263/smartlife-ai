@@ -126,15 +126,25 @@ def chat():
 
         try:
 
-            numbers = re.findall(r"\d+", text)
+            amount_match = re.search(r"\d+", text)
 
-            if not numbers:
-                return jsonify({"reply": "Please include the amount."})
+            if not amount_match:
+                return jsonify({"reply": "Please include an amount."})
 
-            amount = float(numbers[0])
+            amount = float(amount_match.group())
 
-            words = text.split()
-            category = words[-1]
+            # Detect category after "on"
+            category_match = re.search(r"on\s+(\w+)", text)
+
+            if category_match:
+                category = category_match.group(1)
+            else:
+                words = text.split()
+
+                if len(words) >= 4:
+                    category = words[-1]
+                else:
+                    category = "general"
 
             save_expense(session["user"], amount, category)
 
@@ -144,7 +154,7 @@ def chat():
 
         except:
             return jsonify({
-                "reply": "Example: add expense 500 food"
+                "reply": "Example: add expense 500 food OR I spent 200 on food"
             })
 
 
@@ -227,16 +237,13 @@ def insights():
             })
 
     if len(docs) == 0:
-        return jsonify({
-            "insight": "No expenses added yet."
-        })
+        return jsonify({"insight": "No expenses added yet."})
 
     total = sum(e["amount"] for e in docs)
 
     category_totals = {}
 
     for e in docs:
-
         cat = e["category"]
         category_totals[cat] = category_totals.get(cat, 0) + e["amount"]
 
@@ -258,14 +265,11 @@ def prediction():
     docs = []
 
     for doc in expense_db:
-
         if doc.get("user") == session["user"]:
             docs.append(float(doc.get("amount", 0)))
 
     if len(docs) == 0:
-        return jsonify({
-            "prediction": "Not enough data yet."
-        })
+        return jsonify({"prediction": "Not enough data yet."})
 
     avg = sum(docs) / len(docs)
 
