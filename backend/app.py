@@ -146,12 +146,23 @@ def chat():
         else:
             d = 5
 
-        plan = "Here is your study plan:\n\n"
+        tasks = [
+            "Understand basic concepts",
+            "Study important chapters",
+            "Practice numerical problems",
+            "Revise difficult topics",
+            "Solve previous year questions",
+            "Take a mock test",
+            "Final revision"
+        ]
 
-        for i in range(1, d + 1):
-            plan += f"Day {i} – Study important concepts and practice questions.\n"
+    plan = "Here is your study plan:\n\n"
 
-        return jsonify({"reply": plan})
+    for i in range(d):
+        task = tasks[i % len(tasks)]
+        plan += f"Day {i+1} – {task}\n"
+
+    return jsonify({"reply": plan})
 
 
     # ---------------- WATSON CHATBOT ----------------
