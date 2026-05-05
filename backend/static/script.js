@@ -1,9 +1,31 @@
-// ---------------- GET USERNAME ----------------
-let username = localStorage.getItem("username")
+// ---------------- USER VARIABLE ----------------
+let username = "User"
 
-if(!username){
-    username = prompt("Enter your name")
-    localStorage.setItem("username", username)
+
+// ---------------- LOAD CURRENT USER ----------------
+async function loadUser(){
+
+    try{
+
+        const res = await fetch("/session-user")
+        const data = await res.json()
+
+        if(data.user){
+            username = data.user
+
+            const el = document.getElementById("welcomeUser")
+
+            if(el){
+                el.innerText = "Welcome, " + username
+            }
+        }
+
+    }catch(error){
+
+        console.log("User load error:", error)
+
+    }
+
 }
 
 
@@ -30,8 +52,7 @@ async function sendMessage() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                message: input,
-                username: username
+                message: input
             })
         })
 
@@ -63,7 +84,7 @@ async function loadInsights(){
 
     try {
 
-        const res = await fetch("/insights?username=" + username)
+        const res = await fetch("/insights")
         const data = await res.json()
 
         insightElement.innerText = data.insight
@@ -87,7 +108,7 @@ async function loadChart(){
 
     try{
 
-        const res = await fetch("/expenses?username=" + username)
+        const res = await fetch("/expenses")
         const data = await res.json()
 
         const categoryTotals = {}
@@ -131,7 +152,7 @@ async function loadPrediction(){
 
     try{
 
-        const res = await fetch("/prediction?username=" + username)
+        const res = await fetch("/prediction")
         const data = await res.json()
 
         predictionElement.innerText = data.prediction
@@ -148,6 +169,7 @@ async function loadPrediction(){
 
 // ---------------- PAGE LOAD ----------------
 window.onload = function(){
+
     loadUser()
     loadInsights()
     loadChart()
@@ -165,32 +187,6 @@ function scrollToSection(sectionId){
         section.scrollIntoView({
             behavior:"smooth"
         })
-    }
-
-}
-
-// ---------------- LOAD CURRENT USER ----------------
-async function loadUser(){
-
-    try{
-
-        const res = await fetch("/current-user")
-        const data = await res.json()
-
-        if(data.user){
-
-            const el = document.getElementById("welcomeUser")
-
-            if(el){
-                el.innerText = "Welcome, " + data.user
-            }
-
-        }
-
-    }catch(error){
-
-        console.log("User load error:", error)
-
     }
 
 }
