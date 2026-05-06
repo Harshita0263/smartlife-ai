@@ -4,3 +4,4 @@ ibm-watson
 ibm-cloud-sdk-core
 cloudant
 gunicorn
+PyJWT

@@ -3,7 +3,7 @@ from flask_cors import CORS
 import re
 import os
 import requests
-
+import jwt
 # Watson services
 from services.watson_nlu import analyze_text
 from services.watson_dialog import get_response
@@ -89,10 +89,14 @@ def callback():
     if "id_token" not in token_data:
         return "Login failed"
 
-    # store user session
-    session["user"] = token_data["id_token"]
+    
+    decoded = jwt.decode(token_data["id_token"], options={"verify_signature": False})
 
-    # ✅ redirect to index page instead of dashboard
+    user_email = decoded.get("email")
+
+    session["user"] = user_email
+
+    
     return redirect("/")
 
 
