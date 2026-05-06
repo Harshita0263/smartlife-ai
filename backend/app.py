@@ -26,15 +26,12 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 # ---------------- SERVE WEBSITE ----------------
 
 @app.route("/")
-
 def home():
 
     if "user" in session:
-
         return render_template("index.html")
 
     else:
-
         return render_template("login.html")
 
 
@@ -92,9 +89,11 @@ def callback():
     if "id_token" not in token_data:
         return "Login failed"
 
+    # store user session
     session["user"] = token_data["id_token"]
 
-    return redirect("/dashboard")
+    # ✅ redirect to index page instead of dashboard
+    return redirect("/")
 
 
 # ---------------- LOGOUT ----------------
