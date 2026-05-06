@@ -6,7 +6,9 @@
 <title>SmartLife AI</title>
 
 <link rel="stylesheet" href="/static/style.css">
-<script src="/static/script.js"></script>
+
+<!-- IBM App ID SDK -->
+<script src="https://cdn.jsdelivr.net/npm/ibmcloud-appid-js/dist/appid.min.js"></script>
 
 <style>
 
@@ -147,13 +149,8 @@ clear:both;
 font-size:14px;
 }
 
-/* USER MESSAGE */
-
 .user{
 text-align:right;
-}
-
-.user{
 background:#38bdf8;
 color:white;
 padding:10px 15px;
@@ -162,8 +159,6 @@ display:inline-block;
 max-width:70%;
 float:right;
 }
-
-/* AI MESSAGE */
 
 .ai{
 background:#1e293b;
@@ -335,6 +330,9 @@ onkeypress="if(event.key==='Enter'){sendMessage()}"
 
 </div>
 
+<!-- MAIN SCRIPT -->
+<script src="/static/script.js"></script>
+
 <script>
 
 async function loadUsername(){
@@ -357,15 +355,12 @@ console.log("User load error")
 async function logoutUser(){
 
 await fetch("/logout")
-
-window.location.href="/"
+window.location.href="/login"
 
 }
 
 window.onload = function(){
-
 loadUsername()
-
 }
 
 </script>

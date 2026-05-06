@@ -10,14 +10,21 @@ async function loadUser(){
         const res = await fetch("/session-user")
         const data = await res.json()
 
-        if(data.user){
+        if(data.user && data.user !== "Guest"){
+
             username = data.user
 
-            const el = document.getElementById("welcomeUser")
+            const el = document.getElementById("usernameDisplay")
 
             if(el){
-                el.innerText = "Welcome, " + username
+                el.innerText = username
             }
+
+        }else{
+
+            // if session expired redirect to login
+            window.location.href = "/"
+
         }
 
     }catch(error){
@@ -30,7 +37,7 @@ async function loadUser(){
 
 
 // ---------------- CHAT FUNCTION ----------------
-async function sendMessage() {
+async function sendMessage(){
 
     const inputBox = document.getElementById("user-input")
     if(!inputBox) return
@@ -40,39 +47,56 @@ async function sendMessage() {
 
     const chatBox = document.getElementById("chat-box")
 
+    // show user message
     if(chatBox){
-        chatBox.innerHTML += `<div class="message user">${username}: ${input}</div>`
+        chatBox.innerHTML += `
+        <div class="message user">
+            ${username}: ${input}
+        </div>`
     }
 
-    try {
+    inputBox.value = ""
 
-        const response = await fetch("/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
+    try{
+
+        const response = await fetch("/chat",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
             },
-            body: JSON.stringify({
-                message: input
+            body:JSON.stringify({
+                message:input
             })
         })
 
         const data = await response.json()
 
+        const reply = data.reply || "AI could not respond."
+
         if(chatBox){
-            chatBox.innerHTML += `<div class="message ai">AI: ${data.reply}</div>`
+
+            chatBox.innerHTML += `
+            <div class="message ai">
+                AI: ${reply}
+            </div>`
+
             chatBox.scrollTop = chatBox.scrollHeight
+
         }
 
-    } catch (error) {
+    }catch(error){
 
-        console.log("Chat Error:", error)
+        console.log("Chat Error:",error)
 
         if(chatBox){
-            chatBox.innerHTML += `<div class="message ai">Server connection error</div>`
+            chatBox.innerHTML += `
+            <div class="message ai">
+                Server connection error
+            </div>`
         }
+
     }
 
-    inputBox.value = ""
 }
 
 
@@ -82,17 +106,18 @@ async function loadInsights(){
     const insightElement = document.getElementById("insightText")
     if(!insightElement) return
 
-    try {
+    try{
 
         const res = await fetch("/insights")
         const data = await res.json()
 
-        insightElement.innerText = data.insight
+        insightElement.innerText = data.insight || "No insights available."
 
-    } catch (error) {
+    }catch(error){
 
-        console.log("Insight Error:", error)
+        console.log("Insight Error:",error)
         insightElement.innerText = "Unable to load insights"
+
     }
 
 }
@@ -113,9 +138,11 @@ async function loadChart(){
 
         const categoryTotals = {}
 
-        data.forEach(exp => {
+        data.forEach(exp=>{
+
             const cat = exp.category
             categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(exp.amount)
+
         })
 
         const labels = Object.keys(categoryTotals)
@@ -125,19 +152,19 @@ async function loadChart(){
             chartInstance.destroy()
         }
 
-        chartInstance = new Chart(chartCanvas, {
-            type: "pie",
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: values
+        chartInstance = new Chart(chartCanvas,{
+            type:"pie",
+            data:{
+                labels:labels,
+                datasets:[{
+                    data:values
                 }]
             }
         })
 
     }catch(error){
 
-        console.log("Chart Error:", error)
+        console.log("Chart Error:",error)
 
     }
 
@@ -155,25 +182,15 @@ async function loadPrediction(){
         const res = await fetch("/prediction")
         const data = await res.json()
 
-        predictionElement.innerText = data.prediction
+        predictionElement.innerText = data.prediction || "No prediction available."
 
     }catch(error){
 
-        console.log("Prediction Error:", error)
+        console.log("Prediction Error:",error)
+
         predictionElement.innerText = "Unable to generate prediction"
 
     }
-
-}
-
-
-// ---------------- PAGE LOAD ----------------
-window.onload = function(){
-
-    loadUser()
-    loadInsights()
-    loadChart()
-    loadPrediction()
 
 }
 
@@ -184,9 +201,11 @@ function scrollToSection(sectionId){
     const section = document.getElementById(sectionId)
 
     if(section){
+
         section.scrollIntoView({
             behavior:"smooth"
         })
+
     }
 
 }
@@ -195,8 +214,27 @@ function scrollToSection(sectionId){
 // ---------------- LOGOUT ----------------
 async function logout(){
 
-    await fetch("/logout")
+    try{
 
-    window.location.href = "/"
+        await fetch("/logout")
+
+        window.location.href="/"
+
+    }catch(error){
+
+        console.log("Logout Error:",error)
+
+    }
 
 }
+
+
+// ---------------- PAGE LOAD ----------------
+window.addEventListener("load", function(){
+
+    loadUser()
+    loadInsights()
+    loadChart()
+    loadPrediction()
+
+})
