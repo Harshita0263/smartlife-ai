@@ -7,9 +7,6 @@
 
 <link rel="stylesheet" href="/static/style.css">
 
-<!-- IBM App ID SDK -->
-<script src="https://cdn.jsdelivr.net/npm/ibmcloud-appid-js/dist/appid.min.js"></script>
-
 <style>
 
 body{
@@ -355,7 +352,7 @@ console.log("User load error")
 async function logoutUser(){
 
 await fetch("/logout")
-window.location.href="/login"
+window.location.href="/"
 
 }
 
