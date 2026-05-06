@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory, session
+from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from flask_cors import CORS
 import re
 import os
+import requests
 
 # Watson services
 from services.watson_nlu import analyze_text
@@ -14,23 +15,34 @@ app = Flask(__name__, static_folder="static")
 app.secret_key = "smartlife_secret"
 CORS(app)
 
+# ---------------- IBM APP ID CONFIG ----------------
+
+APPID_CLIENT_ID = os.getenv("4e2d7965-eb5c-4f64-8ebe-7608904d3a6b")
+APPID_SECRET = os.getenv("MTkyNjFlMTYtNmU5OC00ZmYyLWI2ODYtMGI2OTkwMjljMjBj")
+APPID_OAUTH_SERVER = os.getenv("https://au-syd.appid.cloud.ibm.com/oauth/v4/9a21f772-e869-4219-9e36-9c3ed9f4366f")
+REDIRECT_URI = os.getenv("https://smartlife-ai2.onrender.com/callback")
+
 
 # ---------------- SERVE WEBSITE ----------------
 
 @app.route("/")
-def serve_home():
 
-    if "user" not in session:
-        return send_from_directory(app.static_folder, "login.html")
+def home():
 
-    return send_from_directory(app.static_folder, "index.html")
+    if "user" in session:
+
+        return render_template("index.html")
+
+    else:
+
+        return render_template("login.html")
 
 
 @app.route("/dashboard")
 def serve_dashboard():
 
     if "user" not in session:
-        return send_from_directory(app.static_folder, "login.html")
+        return redirect("/login")
 
     return send_from_directory(app.static_folder, "dashboard.html")
 
@@ -40,27 +52,59 @@ def serve_static_files(path):
     return send_from_directory(app.static_folder, path)
 
 
-# ---------------- LOGIN ----------------
+# ---------------- IBM APP ID LOGIN ----------------
 
-@app.route("/login", methods=["POST"])
+@app.route("/login")
 def login():
 
-    data = request.get_json()
-    username = data.get("username")
+    oauth_url = (
+        f"{APPID_OAUTH_SERVER}/authorization?"
+        f"client_id={APPID_CLIENT_ID}"
+        f"&response_type=code"
+        f"&redirect_uri={REDIRECT_URI}"
+        f"&scope=openid"
+    )
 
-    if not username:
-        return jsonify({"status": "error", "message": "Username required"})
+    return redirect(oauth_url)
 
-    session["user"] = username
 
-    return jsonify({"status": "success"})
+# ---------------- IBM CALLBACK ----------------
 
+@app.route("/callback")
+def callback():
+
+    code = request.args.get("code")
+
+    token_url = f"{APPID_OAUTH_SERVER}/token"
+
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": APPID_CLIENT_ID,
+        "client_secret": APPID_SECRET,
+        "code": code,
+        "redirect_uri": REDIRECT_URI
+    }
+
+    response = requests.post(token_url, data=data)
+
+    token_data = response.json()
+
+    if "id_token" not in token_data:
+        return "Login failed"
+
+    session["user"] = token_data["id_token"]
+
+    return redirect("/dashboard")
+
+
+# ---------------- LOGOUT ----------------
 
 @app.route("/logout")
 def logout():
 
     session.clear()
-    return jsonify({"status": "logged out"})
+
+    return redirect("/")
 
 
 # ---------------- CURRENT USER ----------------
@@ -69,7 +113,7 @@ def logout():
 def session_user():
 
     if "user" in session:
-        return jsonify({"user": session["user"]})
+        return jsonify({"user": "Authenticated User"})
 
     return jsonify({"user": "Guest"})
 
@@ -133,7 +177,6 @@ def chat():
 
             amount = float(amount_match.group())
 
-            # Detect category after "on"
             category_match = re.search(r"on\s+(\w+)", text)
 
             if category_match:
