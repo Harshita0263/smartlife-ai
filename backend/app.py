@@ -17,10 +17,10 @@ CORS(app)
 
 # ---------------- IBM APP ID CONFIG ----------------
 
-APPID_CLIENT_ID = os.getenv("4e2d7965-eb5c-4f64-8ebe-7608904d3a6b")
-APPID_SECRET = os.getenv("MTkyNjFlMTYtNmU5OC00ZmYyLWI2ODYtMGI2OTkwMjljMjBj")
-APPID_OAUTH_SERVER = os.getenv("https://au-syd.appid.cloud.ibm.com/oauth/v4/9a21f772-e869-4219-9e36-9c3ed9f4366f")
-REDIRECT_URI = os.getenv("https://smartlife-ai2.onrender.com/callback")
+APPID_CLIENT_ID = os.getenv("APPID_CLIENT_ID")
+APPID_SECRET = os.getenv("APPID_SECRET")
+APPID_OAUTH_SERVER = os.getenv("APPID_OAUTH_SERVER")
+REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 
 # ---------------- SERVE WEBSITE ----------------
