@@ -11,7 +11,7 @@ from services.watson_dialog import get_response
 # Cloudant database
 from services.cloudant_service import save_expense, expense_db
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__, static_folder="static", template_folder="templates")
 app.secret_key = "smartlife_secret"
 CORS(app)
 
@@ -44,7 +44,7 @@ def serve_dashboard():
     if "user" not in session:
         return redirect("/login")
 
-    return send_from_directory(app.static_folder, "dashboard.html")
+    return render_template("dashboard.html")
 
 
 @app.route("/<path:path>")
